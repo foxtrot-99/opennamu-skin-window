@@ -1028,13 +1028,6 @@
 
             var px, py, ox, oy;
 			
-			var _open = XMLHttpRequest.prototype.open;
-
-			XMLHttpRequest.prototype.open = function(m, url) {
-				this.url = url;
-				return _open.apply(this, arguments);
-			};
-			
 			window.path = function path(u) {
 				if(u.startsWith('//')) u = 'http:' + u;
 				if(u.startsWith('/')) return u;
@@ -1057,7 +1050,7 @@
 					} */
 				});
 
-                win.find('.wiki-article a[href]:not([href="#"]):not([nowindow]):not([href^="/logout"]):not([href^="%2flogout"]):not([href^="%2Flogout"])').click(function() {
+                win.find('.wiki-article a[href]:not([href^="#"]):not([nowindow]):not([href^="/logout"]):not([href^="%2flogout"]):not([href^="%2Flogout"])').click(function(e) {
                     if($(this).attr('href').toLowerCase().startsWith('javascript:')) return;
                     if($(this).attr('href').toLowerCase().startsWith('//')) return;
                     if($(this).attr('href').toLowerCase().startsWith('http://')) return;
@@ -1065,6 +1058,7 @@
                     if($(this).attr('href').toLowerCase().startsWith('ftp://')) return;
                     if($(this).attr('nowindow')) return;
                     if($(this).attr('data-setaswindow') == 'true') return;
+					if(e.shiftKey) location.href = $(this).attr('href');
 
                     $(this).attr('data-setaswindow', 'true');
 
@@ -1171,7 +1165,6 @@
                 });
             }
 
-            /* https://www.w3schools.com/howto/howto_js_draggable.asp 참고함 */
             function setDraggable() {
                 $('div.wiki-window').each(function() {
                     const el = $(this)[0];
@@ -1268,7 +1261,7 @@
             $('a#newWikiWindow').click(function() {
                 const title = prompt('문서 이름은?');
 				if(!title) return;
-                const wikiWindow = createWindow('문서 - ' + title, '불러오는 중...', '480px', '360px');
+                const wikiWindow = createWindow('문서: ' + title, '불러오는 중...', '480px', '360px');
 
                 $.ajax({
                     url: '/api/w/' + title,
